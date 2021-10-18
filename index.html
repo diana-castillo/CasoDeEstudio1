@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<title>Tienda de Libros</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="index.css" type="text/css">
+<link rel="icon" href="http://iepcervello.edu.pe/web/images/quidocs.png"/>
+<body onload = "informacion()">
+
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-white w3-wide w3-padding w3-card">
+    <!--<a href="index.html" class="w3-bar-item w3-button"><b>INICIO</b></a> -->
+    <a class="w3-bar-item w3-button" onclick = "informacion()"><b>INICIO</b></a>
+    <!-- Links derechos -->
+    <div class="w3-right w3-hide-small">
+      <a onclick = "compra()" class="w3-bar-item w3-button">Carrito de compra</a>
+      <a href="#contacto" class="w3-bar-item w3-button">Contacto</a>
+    </div>
+  </div>
+  <input type="search" name="q" placeholder="Libro a buscar" id="texto">
+  <button type="submit" onclick = "buscar()">Enviar</button>
+</div>
+
+<script>
+  function compra() {
+    eliminar("portada");
+    eliminar("recomendaciones");
+
+    var costoF = 0.0;
+
+    for (let i in datos) {
+      if (carrito.includes(i) == true) {
+        let libro = document.createElement("div");
+        libro.style.cssText = 'float:left; text-align:center;';
+        libro.className = "tam";
+
+        let imagen = document.createElement("img");
+        imagen.srcset = datos[i].imagen;
+        imagen.style = "height:auto; max-width:60%";
+
+        var titulo = document.createElement("div");
+        titulo.textContent = datos[i].titulo;
+        titulo.style.cssText = 'font-weight:bold;';
+
+        let precio = document.createElement("p");
+        precio.textContent = datos[i].costo;
+        var costo = datos[i].costo;
+        var costoS = costo.slice(1);
+        costoF += parseFloat(costoS);
+
+        let bordeB = document.createElement("div");
+        bordeB.className = "w3-display-container";
+        bordeB.addEventListener("click", function() {
+          if (carrito.includes(i) == false) {
+            carrito.push(i);
+            console.log(carrito);
+            window.alert("Se ha añadido al carrito.");
+          }
+          else {
+            window.alert("Ya se encuentra en el carrito.");
+          }
+        });
+
+        let boton = document.createElement("div");
+        boton.textContent = "Comprar";
+        boton.className = "w3-display-topleft w3-black w3-padding";
+
+
+        var cantidad = document.createElement("input");
+        cantidad.type = "number";
+        cantidad.value = 1;
+        cantidad.id = "cantidad" + i.toString();
+        cantidad.addEventListener("change", function() {
+          var contador = 0;
+          let mult = 0;
+          for (let i = 0; i < carrito.length; i++) {
+            mult = document.getElementById("cantidad" + carrito[i].toString()).value;
+            contador += parseInt(datos[carrito[i]].costo.slice(1))*mult;
+          }
+          let mod = document.getElementById("nombre2");
+          mod.textContent = "Total: " + '$' + contador.toString();
+        });
+
+        let sal = document.createElement("br");
+        let sal2 = document.createElement("br");
+
+        bordeB.appendChild(boton);
+
+        libro.appendChild(cantidad);
+        libro.appendChild(sal);
+        libro.appendChild(sal2);
+        libro.appendChild(bordeB);
+        libro.appendChild(imagen);
+        libro.appendChild(titulo);
+        libro.appendChild(precio);
+
+        var ele = document.getElementById("portada");
+        ele.appendChild(libro);
+
+      }
+    }
+    let nom = document.getElementById("nombre");
+    nom.textContent = "Carrito de compra";
+
+    var total = document.getElementById("nombre2");
+    total.textContent = "Total: " + '$' + costoF;
+
+    let pagos = document.getElementById("recomendaciones");
+
+    let pagoRec = document.createElement("p");
+    pagoRec.textContent = "PAGO Y ENVIO";
+    pagoRec.style.cssText = 'font-weight:bold;';
+
+    pagos.appendChild(pagoRec);
+
+    let opcion1 = document.createElement("select");
+    let tarjeta = document.createElement("option");
+    tarjeta.textContent = "Tarjeta de crédito";
+    let cheque = document.createElement("option");
+    cheque.textContent = "Cheque";
+    opcion1.appendChild(tarjeta);
+    opcion1.appendChild(cheque);
+
+    let opcion2 = document.createElement("select");
+    let dhl = document.createElement("option");
+    dhl.textContent = "DHL";
+    let fedex = document.createElement("option");
+    fedex.textContent = "Fedex";
+    let ups = document.createElement("option");
+    ups.textContent = "UPS";
+    opcion2.appendChild(dhl);
+    opcion2.appendChild(fedex);
+    opcion2.appendChild(ups);
+
+    let formato = document.createElement("p");
+    formato.textContent = "Forma de pago: ";
+
+    let tipo = document.createElement("p");
+    tipo.textContent = "Tipo de envío: ";
+
+    let salto1 = document.createElement("br");
+    let salto2 = document.createElement("br");
+    let salto3 = document.createElement("br");
+
+    /*let boton = document.createElement("button");
+    boton.textContent = "Comprar ahora";
+
+    boton.addEventListener("click", function() {
+      if (total > 0) {
+        window.alert("Procesando pedido...");
+      }
+      else {
+        window.alert("Carrito vacío.");
+      }
+      });*/
+    let boton = document.createElement("input");
+    boton.type = "submit";
+    boton.value = "Comprar ahora";
+    boton.style.cssText = "margin-right: 10px";
+    boton.addEventListener("click", function() {
+      for (let i = 0; i < carrito.length; i++) {
+        let cant = document.getElementById("cantidad" + carrito[i].toString()).value;
+        if (datos[carrito[i]].cantidad < cant) {
+          alert("Su orden será fraccionada.");
+        }
+      }
+      if (costoF < 1) {
+        alert("Carrito vacío.");
+      }
+      else {
+        alert("Procesando pedido...");
+      }
+      eliminar("portada");
+      carrito = [];
+      costoF = 0;
+      var totalN = document.getElementById("nombre2");
+      totalN.textContent = "Total: " + '$' + costoF;
+    });
+
+    pagos.appendChild(formato);
+    pagos.appendChild(opcion1);
+    pagos.appendChild(salto1);
+    pagos.appendChild(tipo);
+    pagos.appendChild(opcion2);
+    pagos.appendChild(salto2);
+    pagos.appendChild(salto3);
+    pagos.appendChild(boton);
+  }
+
+  function eliminar (elemento) {
+    let div = document.getElementById(elemento);
+    while (div.firstChild) {
+      div.removeChild(div.firstChild);
+    }
+  }
+
+  function buscar() {
+    var txt = document.getElementById("texto").value;
+    //var div = document.getElementById("portada");
+
+    eliminar("portada");
+    eliminar("recomendaciones");
+
+    for (let i in datos) {
+      if (txt == datos[i].titulo) {
+
+        let libro = document.createElement("div");
+        libro.style.cssText = 'float:left; text-align:center;';
+        libro.className = "tam";
+
+        let imagen = document.createElement("img");
+        imagen.srcset = datos[i].imagen;
+        imagen.style = "height:auto; max-width:60%";
+
+        var titulo = document.createElement("div");
+        titulo.textContent = datos[i].titulo;
+        titulo.style.cssText = 'font-weight:bold;';
+
+        let precio = document.createElement("p");
+        precio.textContent = datos[i].costo;
+
+        let bordeB = document.createElement("div");
+        bordeB.className = "w3-display-container";
+        bordeB.addEventListener("click", function() {
+          if (carrito.includes(i) == false) {
+            carrito.push(i);
+            console.log(carrito);
+            window.alert("Se ha añadido al carrito.");
+          }
+          else {
+            window.alert("Ya se encuentra en el carrito.");
+          }
+        });
+
+        let boton = document.createElement("div");
+        boton.textContent = "Comprar";
+        boton.className = "w3-display-topleft w3-black w3-padding";
+
+        bordeB.appendChild(boton);
+
+        var categoria = datos[i].categoria;
+        var title = datos[i].titulo;
+
+        libro.appendChild(bordeB);
+        libro.appendChild(imagen);
+        libro.appendChild(titulo);
+        libro.appendChild(precio);
+
+        let ele = document.getElementById("portada");
+        ele.appendChild(libro);
+      }
+    }
+
+    for (let i in datos) {
+      if (datos[i].categoria == categoria && datos[i].titulo != title) {
+        let libro2 = document.createElement("div");
+        libro2.style.cssText = 'float:left; text-align:center;';
+        libro2.className = "tam";
+
+        let imagen2 = document.createElement("img");
+        imagen2.srcset = datos[i].imagen;
+        imagen2.style = "height:auto; max-width:60%";
+
+        let titulo2 = document.createElement("div");
+        titulo2.textContent = datos[i].titulo;
+        titulo2.style.cssText = 'font-weight:bold;';
+
+        let precio2 = document.createElement("p");
+        precio2.textContent = datos[i].costo;
+
+        let bordeB2 = document.createElement("div");
+        bordeB2.className = "w3-display-container";
+        bordeB2.addEventListener("click", function() {
+          if (carrito.includes(i) == false) {
+            carrito.push(i);
+            console.log(carrito);
+            window.alert("Se ha añadido al carrito.");
+          }
+          else {
+            window.alert("Ya se encuentra en el carrito.");
+          }
+        });
+
+        let boton2 = document.createElement("div");
+        boton2.textContent = "Comprar";
+        boton2.className = "w3-display-topleft w3-black w3-padding";
+
+        bordeB2.appendChild(boton2);
+
+        libro2.appendChild(bordeB2);
+        libro2.appendChild(imagen2);
+        libro2.appendChild(titulo2);
+        libro2.appendChild(precio2);
+
+        let ele2 = document.getElementById("recomendaciones");
+        ele2.appendChild(libro2);
+      }
+    }
+    let nom = document.getElementById("nombre");
+    nom.textContent = "Resultado";
+    let nom2 = document.getElementById("nombre2");
+    nom2.textContent = "Libros recomendados";
+  }
+</script>
+
+<!-- Header -->
+<header class="w3-display-container w3-content w3-wide" style="max-width:1500px;" id="home">
+  <img class="w3-image" src="https://www.directv.com.uy/content/dam/public-sites/cl/deportes/futbol/destacado/Bg.desktop.png" alt="Architecture" width="1500" height="400">
+  <div class="w3-display-middle w3-margin-top w3-center">
+    <h1 class="w3-xxlarge w3-text-white"><span class="w3-padding w3-black w3-opacity-min"><b>TIENDA</b></span> <span class="w3-hide-small w3-text-light-grey">DE LIBROS</span></h1>
+  </div>
+</header>
+
+<!-- contenido -->
+<div class="w3-content w3-padding" style="max-width:1564px">
+
+
+  <!--<div id="portada"></div> -->
+  <script src = libros.js></script>
+  <script>
+    function informacion() {
+
+      eliminar("portada");
+      eliminar("recomendaciones");
+
+      for (let i in datos) {
+        let libro = document.createElement("div");
+        libro.style.cssText = 'float:left; text-align:center;';
+        libro.className = "tam";
+
+        let imagen = document.createElement("img");
+        imagen.srcset = datos[i].imagen;
+        imagen.style = "height:auto; max-width:60%";
+
+        let titulo = document.createElement("div");
+        titulo.textContent = datos[i].titulo;
+        titulo.style.cssText = 'font-weight:bold;';
+
+        let precio = document.createElement("p");
+        precio.textContent = datos[i].costo;
+
+        let bordeB = document.createElement("div");
+        bordeB.className = "w3-display-container";
+        bordeB.addEventListener("click", function() {
+            if (carrito.includes(i) == false) {
+                carrito.push(i);
+                console.log(carrito);
+                window.alert("Se ha añadido al carrito.");
+            }
+            else {
+                window.alert("Ya se encuentra en el carrito.");
+            }
+        });
+        let boton = document.createElement("div");
+        boton.textContent = "Comprar";
+        boton.className = "w3-display-topleft w3-black w3-padding";
+
+        bordeB.appendChild(boton);
+
+        libro.appendChild(bordeB);
+        libro.appendChild(imagen);
+        libro.appendChild(titulo);
+        libro.appendChild(precio);
+
+        let ele = document.getElementById("portada");
+        ele.appendChild(libro);
+      }
+      let nom = document.getElementById("nombre");
+      nom.textContent = "Libros";
+
+      let nom2 = document.getElementById("nombre2");
+      nom2.textContent = "Acerca de";
+
+      let acerca = document.getElementById("recomendaciones");
+
+      let afueraParrafo = document.createElement("h3");
+      afueraParrafo.className = "w3-border-bottom w3-border-light-grey w3-padding-16";
+      let parrafo = document.createElement("p");
+      parrafo.textContent = "Esta Tienda de Libros tiene como objetivo la visualización y venta de artículos de libros, " +
+              "con esta página web se busca establecer la modalidad de venta online de libros para todo " +
+              "tipo de personas y así obtener un mayor alcance, fomentar la lectura en distintos ámbitos de " +
+              "interés y conocimiento, así como poder evolucionar este negocio encontrado en la ciudad de " +
+              "Guadalajara, Jalisco, México.";
+      parrafo.style.cssText = "font-size: 65%";
+      afueraParrafo.appendChild(parrafo);
+      acerca.appendChild(afueraParrafo);
+    }
+
+  </script>
+
+  <!-- orden -->
+  <div class="w3-container w3-padding-32" id="projects">
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16" id="nombre"></h3>
+  </div>
+  <div id="portada"></div>
+  <div class="w3-container w3-padding-32" id="projects2">
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16" id="nombre2"></h3>
+  </div>
+  <div class="w3-container w3-padding-32" id="recomendaciones"></div>
+
+  <!-- About
+<div class="w3-container w3-padding-32" id="about">
+  <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">Acerca de</h3>
+  <p>
+    Esta Tienda de Libros tiene como objetivo la visualización y venta de artículos de libros,
+    con esta página web se busca establecer la modalidad de venta online de libros para todos
+    tipo de personas y así obtener un mayor alcance, fomentar la lectura en distintos ámbitos de
+    interés y conocimiento, así como poder evolucionar este negocio encontrado en la ciudad de
+    Guadalajara, Jalisco, México.
+  </p>
+</div> -->
+
+
+  <!-- Contacto -->
+  <div class="w3-container w3-padding-32" id="contacto">
+    <h3 class="w3-border-bottom w3-border-light-grey w3-padding-16">Contacto</h3>
+    <p>Contáctanos para expresar tus dudas y sugerencias.</p>
+    <form action="/action_page.php" target="_blank">
+      <input class="w3-input w3-border" type="text" placeholder="Nombre" required name="Name">
+      <input class="w3-input w3-section w3-border" type="text" placeholder="Email" required name="Email">
+      <input class="w3-input w3-section w3-border" type="text" placeholder="Asunto" required name="Subject">
+      <input class="w3-input w3-section w3-border" type="text" placeholder="Comentario" required name="Comment">
+      <button class="w3-button w3-black w3-section" type="submit">
+        <i class="fa fa-paper-plane"></i> ENVIAR MENSAJE
+      </button>
+    </form>
+  </div>
+
+</div>
+
+<!-- pie de pagina -->
+<footer class="w3-center w3-black w3-padding-16">
+  <p> <a href="" title="" target="_blank" class="w3-hover-text-white">Tienda de Libros</a> S.A. de C.V. Todos los Derechos Reservados.</p>
+</footer>
+
+</body>
+</html>
